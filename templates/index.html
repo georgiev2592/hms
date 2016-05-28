@@ -1,0 +1,28 @@
+$def with (title, form, user, msg, error)
+$var title: $title
+$var user: $user
+
+<div class="row">
+    <div class="col-lg-6 col-lg-offset-3 col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
+        <div class="starter-template">
+            <h1>Bootstrap starter template</h1>
+            <p class="lead">Use this document as a way to quickly start any new project.<br> All you get is this text and a mostly barebones HTML document.</p>
+        </div>
+
+        <div id='topRow'>
+            $if user != "":
+                Welcome, $user! [<a href="/logout">logout</a>]
+        </div>
+
+        <form name ="main" method="post">
+            $if msg != "":
+                <p><font color="black"> $msg </font></p>
+            $if error != "":
+                <p><font color="red"> $error </font></p>
+
+            $:form.render()
+
+        </form>
+    </div><!-- /.col -->
+</div><!-- /.row -->
+       

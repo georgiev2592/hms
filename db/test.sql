@@ -1,0 +1,7 @@
+SELECT COUNT(*) FROM Users;
+
+SELECT COUNT(*) FROM Rooms;
+
+SELECT COUNT(*) FROM Reservations;
+
+SELECT COUNT(*) FROM Guests;
