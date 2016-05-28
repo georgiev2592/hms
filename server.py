@@ -2,6 +2,8 @@
 
 import web, crypto, hashlib, os, MySQLdb, random
 from web import form
+from datetime import datetime
+import time
 
 web.config.debug = False
 
@@ -26,7 +28,7 @@ db = MySQLdb.connect(host = 'hms.cytvwijmz1je.us-west-2.rds.amazonaws.com',
 cur = db.cursor()
 
 if web.config.get('_session') is None:
-	session = web.session.Session(app, web.session.DiskStore('sessions'), initializer={'login': 0, 'privilege': 0})
+	session = web.session.Session(app, web.session.DiskStore('sessions'), initializer={'login': 0, 'privilege': -1, 'name': ''})
 	web.config._session = session
 else:
 	session = web.config._session
@@ -79,6 +81,7 @@ class Login:
 			if pw == ident['encrypted_password']:
 				session.login = 1
 				session.privilege = ident['privilege']
+				session.name = ident['first_name'] + ' ' + ident['last_name']
 				render = create_render(session.privilege)
 				return render.home('HMS | Home', ident['first_name'] + ' ' + ident['last_name'], '', '', '')
 			else:
@@ -168,33 +171,36 @@ class Register:
 					err = "User already registered."
 				else:
 					self.__helper(form)
+					msg = "User registered."
 			except:
 				self.__helper(form)
+				msg = "User registered."
 
 		render = create_render(session.privilege)
-		return render.register("HMS | Register", self.nullform(), "", msg, err)
+		return render.home('HMS | Home', session.name, '', msg, '')
 
 	def __helper(self, form):
+		#SQL query to INSERT a record into the table FACTRESTTBL.
+		cur.execute('''INSERT INTO Users (first_name, last_name, encrypted_password, email, created_at, updated_at, current_sign_in_at, last_sign_in_at, current_sign_in_ip, last_sign_in_ip, privilege)
+						VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)''',
+						(form.d.first_name, 
+						form.d.last_name, 
+						hashlib.sha1(form.d.password).hexdigest(),
+						form.d.email,
+						self.__stamp(datetime.now()),
+						self.__stamp(datetime.now()),
+						self.__stamp(datetime.now()),
+						self.__stamp(datetime.now()),
+						web.ctx['ip'],
+						web.ctx['ip'],
+						form.d.privilege))
+		
+	    # Commit your changes in the database
+		db.commit()
 
-		#Set the password and role: only non-admin "users" can be created
-		#through the web interface
-		db.insert('Users', 
-			first_name = form.d.first_name, 
-			last_name = form.d.last_name, 
-			encrypted_password = hashlib.sha1(form.d.password).hexdigest(),
-			email = form.d.email,
-			created_at = web.SQLLiteral("NOW()"),
-			updated_at = web.SQLLiteral("NOW()"),
-			current_sign_in_at = web.SQLLiteral("NOW()"),
-			last_sign_in_at = web.SQLLiteral("NOW()"),
-			current_sign_in_ip = web.ctx['ip'],
-			last_sign_in_ip = web.ctx['ip'],
-			privilege = form.d.privilege)
-
-		msg = "User registered."
-
-		session.login = 1
-		session.privilege = form.d.privilege
+	def __stamp(self, dt):
+	  # turns a python datetime object into a unix time stamp (seconds)
+	  return int(time.mktime( dt.timetuple() ))
 
 class Logout:
 	def GET(self):

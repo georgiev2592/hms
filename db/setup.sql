@@ -9,8 +9,8 @@ CREATE TABLE Users (
   sign_in_count INT DEFAULT 0,
   current_sign_in_at DATETIME NOT NULL,
   last_sign_in_at DATETIME NOT NULL,
-  current_sign_in_ip DATETIME NOT NULL,
-  last_sign_in_ip DATETIME NOT NULL,
+  current_sign_in_ip VARCHAR(15) NOT NULL,
+  last_sign_in_ip VARCHAR(15) NOT NULL,
   privilege INT NOT NULL,
   CONSTRAINT U_PK PRIMARY KEY(id)
 );
