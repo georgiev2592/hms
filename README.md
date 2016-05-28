@@ -17,7 +17,6 @@ $ clone repo && cd hms
 
 ```
 $ python setup.py install
-$ 
 ```
 
 > Install MySQLdb (https://sourceforge.net/projects/mysql-python/files/).
@@ -33,4 +32,4 @@ $ python server.py
 
 - Python
 - web.py
-- MySQLdb
+- MySQLdb.py
