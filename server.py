@@ -98,31 +98,31 @@ class Register:
 			form.notnull,
 			description = "First Name",
 			class_ = "form-control",
-			placeholder='Enter your first name'),
+			placeholder='Enter employee first name'),
 		form.Textbox("last_name",
 			form.notnull,
 			description = "Last Name",
 			class_ = "form-control",
-			placeholder='Enter your last name'),
+			placeholder='Enter employee last name'),
 		form.Textbox("email",
 			form.notnull,
 			description = "Email",
 			class_ = "form-control",
-			placeholder='Enter your email'),
+			placeholder='Enter employee email'),
 		form.Dropdown('privilege', 
 			[('0', 'Front Desk'), ('1', 'Cleaning Personnel')],
 			description = "Role",
 			class_ = "form-control",
-			placeholder='Select your work position'),
+			placeholder='Select employee work position'),
 		form.Password("password",
 			form.notnull,
 			description = "Password",
 			class_ = "form-control",
-			placeholder='Enter your password'),
+			placeholder='Enter employee password'),
 		form.Password('confirm_password',
 			description = "Confirm Password",
 			class_ = "form-control",
-			placeholder='Confirm your password'),
+			placeholder='Confirm employee password'),
 		form.Button("Register",
 			id='registerButton',
 			class_ = "btn btn-default btn-block"),
@@ -132,14 +132,19 @@ class Register:
 	nullform = form.Form()
 
 	def GET(self):
+		usr = ''
+
 		if logged():
-			render = create_render(session.privilege)
-			return render.register("HMS | Register", self.nullform, "", "", "Already logged in.")
+			usr = 'placeholder'
+			# render = create_render(session.privilege)
+			# return render.register("HMS | Register", self.nullform, "", "", "Already logged in.")
 		else:
-			session.login = 0
-			session.privilege = -1
-			render = create_render(session.privilege)
-			return render.register("HMS | Register", self.register_form(), "", "", "")
+			# session.login = 0
+			# session.privilege = -1
+			pass
+		
+		render = create_render(session.privilege)
+		return render.register("HMS | Register", self.register_form(), usr, "", "")
 
 	def POST(self):
 		global user_ids
@@ -153,8 +158,8 @@ class Register:
 			err = "Invalid fields."
 		else:
 
-			email = dict(email = form.d.email)
-			ident = db.select('Users', where='email = $email', vars=email)
+			cur.execute('SELECT * FROM Users WHERE email=%s', (form.d.email))
+			ident = fetchOneAssoc(cur)
 
 			try:
 				if form.d.email == ident['email']:
@@ -198,15 +203,8 @@ class Logout:
 
 class Home:
 	def GET(self):
-		if logged():
-			if session.privilege == 0:
-				render.home('', '', '', 'Please log in 0.')
-			elif session.privilege == 1:
-				render.home('', '', '', 'Please log in 1.')
-			elif session.privilege == 2:
-				render.home('', '', '', 'Please log in 2.')
-		else:
-			return render.home('', '', '', 'Please log in.')
+		render = create_render(session.privilege)
+		return render.home('HMS | Home', '', '', '', '')
 
 class About:
 	def GET(self):

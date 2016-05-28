@@ -9,3 +9,6 @@
 
 # Ignore all .pyc files
 *.pyc
+
+# Ignore everythin in  sessions/
+sessions/
