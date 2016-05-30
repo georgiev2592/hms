@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import web, crypto, hashlib, os, MySQLdb, random
+import web, hashlib, os, MySQLdb, random
 from web import form
 from datetime import datetime
 from os import urandom
