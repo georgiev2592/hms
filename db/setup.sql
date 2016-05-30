@@ -1,5 +1,4 @@
 CREATE TABLE Users (
-<<<<<<< HEAD
     id INT NOT NULL AUTO_INCREMENT,
     first_name VARCHAR(80) NOT NULL,
     last_name VARCHAR(80) NOT NULL,
@@ -43,7 +42,8 @@ CREATE TABLE Guests (
     id INT NOT NULL,
     first_name VARCHAR(80) NOT NULL,
     last_name VARCHAR(80) NOT NULL,
-    age INT NOT NULL,
+    email VARCHAR(100) NOT NULL,
+    birthday DATE NOT NULL,
     reservation_code INT,
     CONSTRAINT G_PK PRIMARY KEY(id),
     CONSTRAINT G_RES_CODE FOREIGN KEY(reservation_code) REFERENCES Reservations(code)

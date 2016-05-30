@@ -88,8 +88,9 @@ class Login:
             render = create_render(session.privilege)
 
             list_of_users = self._generateList()
+            list_of_comments = self._generateListComments()
 
-            return render.home('HMS | Home', ident['first_name'] + ' ' + ident['last_name'], '', '', '', list_of_users)
+            return render.home('HMS | Home', ident['first_name'] + ' ' + ident['last_name'], '', '', '', list_of_users, list_of_comments)
         else:
             session.login = 0
             session.privilege = -1
