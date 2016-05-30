@@ -1,7 +1,10 @@
 INSERT INTO Users (first_name, last_name, encrypted_password, email, created_at, updated_at, current_sign_in_at, last_sign_in_at, current_sign_in_ip, last_sign_in_ip, privilege) VALUES 
    ('Peter', 'Georgiev','5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8','peter@test.test',NOW(),NOW(),NOW(),NOW(),'0.0.0.0','0.0.0.0', 2),
    ('Hanna', 'Yoo','5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8','hanna@test.test',NOW(),NOW(),NOW(),NOW(),'0.0.0.0','0.0.0.0', 2),
-   ('Renee', 'Liu','5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8','renee@test.test',NOW(),NOW(),NOW(),NOW(),'0.0.0.0','0.0.0.0', 2);
+   ('Renee', 'Liu','5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8','renee@test.test',NOW(),NOW(),NOW(),NOW(),'0.0.0.0','0.0.0.0', 2),
+   ('Sam', 'Bhuiyan','5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8','sam@test.test',NOW(),NOW(),NOW(),NOW(),'0.0.0.0','0.0.0.0', 2),
+   ('Eriq', 'Augustine','5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8','eriq@test.test',NOW(),NOW(),NOW(),NOW(),'0.0.0.0','0.0.0.0', 1),
+   ('Vishal', 'Venky','5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8','vishal@test.test',NOW(),NOW(),NOW(),NOW(),'0.0.0.0','0.0.0.0', 0);
 
 INSERT INTO Rooms VALUES
    ('RND','Recluse and defiance',1,'King',2,150,'modern'),
