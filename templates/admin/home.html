@@ -35,6 +35,11 @@ $var user: $user
                   	<th>privilege</th>
                   	<th>Edit</th>
                   	<th>Delete</th>
+                    $for user in list_of_users
+                      <tr class="$loop.parity">
+                        <td>$loop.index</td>
+                        <td>$user.email</td>td>
+                      </tr>
               	</tr>
         	</table>
         </div>
