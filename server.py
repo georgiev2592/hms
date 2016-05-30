@@ -169,7 +169,6 @@ class Register:
         return render.register("HMS | Register", self.register_form(), usr, "", "")
 
     def POST(self):
-        global user_ids
         form = self.register_form()
         msg = ""
         err = ""
@@ -255,7 +254,7 @@ class Contact:
             id='emailBox',
             class_ = 'form-control',
             placeholder='Enter your email'),
-        form.Textarea('comment',
+        form.Textarea('content',
             form.notnull,
             description='Questions or Comments',
             id='passwordBox',
@@ -275,7 +274,31 @@ class Contact:
         err = ''
 
         render = create_render(session.privilege)
-        return render.contact('HMS | Contact', '', form, msg, err)  
+        return render.contact('HMS | Contact', '', form, msg, err) 
+
+    def POST(self):
+        form = self.contact_form()
+        msg = ''
+        err = ''
+        
+        if not form.validates():
+            err = 'Invalid fields.'
+        else:
+            msg = "Comment was successfully posted."
+            self.__helper(form)
+
+        render = create_render(session.privilege)
+        return render.contact('HMS | Contact', '', form, msg, err)
+
+    def __helper(self, form):
+        cur.execute('''INSERT INTO Comments (name, email, content)
+                        VALUES (%s, %s, %s)''',
+                        (form.d.name, 
+                        form.d.email, 
+                        form.d.content))
+
+        # Commit your changes in the database
+        db.commit()
 
 def logged():
     if session.login == 1:

@@ -5,3 +5,5 @@ SELECT COUNT(*) FROM Rooms;
 SELECT COUNT(*) FROM Reservations;
 
 SELECT COUNT(*) FROM Guests;
+
+SELECT COUNT(*) FROM Comments;
