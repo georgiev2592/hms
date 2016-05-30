@@ -91,16 +91,22 @@ class Login:
                 session.login = 0
                 session.privilege = -1
                 render = create_render(session.privilege)
-                return render.index('HMS | Login', form, '', '', 'Username/Password Incorrect')
+                return render.index('HMS | Login', form, '', '', 'Username/Password Incorrect 1')
         except:
             session.login = 0
             session.privilege = -1
             render = create_render(session.privilege)
-            return render.index('HMS | Login', form, '', '', 'Username/Password Incorrect')
+            return render.index('HMS | Login', form, '', '', 'Username/Password Incorrect 2')
 
     def _generateList(self):
         cur.execute('SELECT * FROM Users')
-        list_of_users = fetchAllAssoc(cur)
+        count = 0
+
+        for row in cur.fetchall():
+            count += 1
+
+        cur.execute('SELECT * FROM Users')
+        list_of_users = [fetchOneAssoc(cur) for k in range(count)]
 
         print list_of_users
 
@@ -293,21 +299,6 @@ def fetchOneAssoc(cursor):
 
     for (name, value) in zip(desc, data) :
         dict[name[0]] = value
-
-    return dict
-
-def fetchAllAssoc(cursor):
-    data = cursor.fetchall()
-    if data == None:
-        return None
-
-    desc = cursor.description
-
-    dict = {}
-
-    for row in data:
-        for (name, value) in zip(desc, data):
-            dict[name[0]] = value
 
     return dict
 
