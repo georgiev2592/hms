@@ -52,6 +52,22 @@ $var user: $user
                         </tr>
                       </tr>
               	</tr>
+                <table class="table table-striped">
+                <tr>
+                    <th>id</th>
+                    <th>name</th>
+                    <th>email</th>
+                    <th>content</th>
+                    $for comment in list_of_comments
+                        <tr>
+                          <td>$comment['id']</td>
+                          <td>$comment['name']</td>
+                          <td>$comment['email']</td>
+                          <td>$comment['content']</td>
+                        </tr>
+                      </tr>
+                </tr>
+          </table>
         	</table>
         </div>
     </div><!-- /.col -->
