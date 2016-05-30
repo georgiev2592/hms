@@ -114,6 +114,19 @@ class Login:
         print list_of_users
         return list_of_users
 
+    def _generateListComments(self):
+        cur.execute('SELECT * FROM Comments')
+        count = 0
+
+        for row in cur.fetchall():
+            count += 1
+
+        cur.execute('SELECT * FROM Comments')
+        list_of_comments = [fetchOneAssoc(cur) for k in range(count)]
+
+        print list_of_comments
+        return list_of_comments
+
 class Register:
     register_form = form.Form(
         form.Textbox("first_name",
