@@ -37,7 +37,7 @@ $var user: $user
                   	<th>Delete</th>
                     $for user in list_of_users
                         <tr>
-                          <td>$user['first_name'] + " " + $user['last_name'] </td>
+                          <td>$user['first_name'] $user['last_name'] </td>
                           <td>$user['email']</td>
                           <td>$user['created_at']</td>
                           <td>$user['updated_at']</td>
@@ -47,8 +47,6 @@ $var user: $user
                           <td>$user['current_sign_in_ip']</td>
                           <td>$user['last_sign_in_ip']</td>
                           <td>$user['privilege']</td>
-                          <td>$user['Edit']</td>
-                          <td>$user['Delete']</td>
                         </tr>
                       </tr>
               	</tr>

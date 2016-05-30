@@ -3,6 +3,7 @@
 import web, crypto, hashlib, os, MySQLdb, random
 from web import form
 from datetime import datetime
+from os import urandom
 import time
 
 web.config.debug = False
@@ -22,7 +23,7 @@ app = web.application(urls, globals())
 # db = web.database(dbn='mysql', db='hms', user='wreckingball', pw='patricksux', host='hms.cytvwijmz1je.us-west-2.rds.amazonaws.com')
 db = MySQLdb.connect(host = 'hms.cytvwijmz1je.us-west-2.rds.amazonaws.com',
                      user = 'wreckingball',
-                     passwd = 'patricksux',
+                     passwd = 'hmsFinalProject',
                      db = 'hms',
                      unix_socket = '/media/media/mysql/mysql.sock')
 cur = db.cursor()
@@ -71,32 +72,34 @@ class Login:
             return render.index('HMS | Login', form, '', '', 'Invalid form data.')
 
         email = dict(email = form.d.email)
-        pw = hashlib.sha1(form.d.password).hexdigest()
 
         # ident = db.select('Users', where={'email : $email'}, vars=email)
         cur.execute('SELECT * FROM Users WHERE email=%s', (form.d.email))
         ident = fetchOneAssoc(cur)
 
-        try:
-            if pw == ident['encrypted_password']:
-                session.login = 1
-                session.privilege = ident['privilege']
-                session.name = ident['first_name'] + ' ' + ident['last_name']
-                render = create_render(session.privilege)
+        salt = ident['encrypted_password'][:40]
+        pw = hashlib.sha1(salt + form.d.password).hexdigest()
 
-                list_of_users = self._generateList()
+        # try:
+        if pw == ident['encrypted_password'][40:]:
+            session.login = 1
+            session.privilege = ident['privilege']
+            session.name = ident['first_name'] + ' ' + ident['last_name']
+            render = create_render(session.privilege)
 
-                return render.home('HMS | Home', ident['first_name'] + ' ' + ident['last_name'], '', '', '', list_of_users)
-            else:
-                session.login = 0
-                session.privilege = -1
-                render = create_render(session.privilege)
-                return render.index('HMS | Login', form, '', '', 'Username/Password Incorrect 1')
-        except:
+            list_of_users = self._generateList()
+
+            return render.home('HMS | Home', ident['first_name'] + ' ' + ident['last_name'], '', '', '', list_of_users)
+        else:
             session.login = 0
             session.privilege = -1
             render = create_render(session.privilege)
-            return render.index('HMS | Login', form, '', '', 'Username/Password Incorrect 2')
+            return render.index('HMS | Login', form, '', '', 'Username/Password Incorrect')
+        # except:
+        #     session.login = 0
+        #     session.privilege = -1
+        #     render = create_render(session.privilege)
+        #     return render.index('HMS | Login', form, '', '', 'Username/Password Incorrect')
 
     def _generateList(self):
         cur.execute('SELECT * FROM Users')
@@ -109,6 +112,7 @@ class Login:
         list_of_users = [fetchOneAssoc(cur) for k in range(count)]
 
         print list_of_users
+        return list_of_users
 
 class Register:
     register_form = form.Form(
@@ -191,16 +195,20 @@ class Register:
                 self.__helper(form)
                 msg = "User registered."
 
+        list_of_users = self._generateList()
+
         render = create_render(session.privilege)
-        return render.home('HMS | Home', session.name, '', msg, '')
+        return render.home('HMS | Home', session.name, '', msg, '', list_of_users)
 
     def __helper(self, form):
+        salt = hashlib.sha1(urandom(16)).hexdigest()
+
         #SQL query to INSERT a record into the table FACTRESTTBL.
         cur.execute('''INSERT INTO Users (first_name, last_name, encrypted_password, email, created_at, updated_at, current_sign_in_at, last_sign_in_at, current_sign_in_ip, last_sign_in_ip, privilege)
                         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)''',
                         (form.d.first_name, 
                         form.d.last_name, 
-                        hashlib.sha1(form.d.password).hexdigest(),
+                        salt + hashlib.sha1(salt + form.d.password).hexdigest(),
                         form.d.email,
                         self.__stamp(datetime.now()),
                         self.__stamp(datetime.now()),

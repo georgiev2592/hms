@@ -1,10 +1,10 @@
 INSERT INTO Users (first_name, last_name, encrypted_password, email, created_at, updated_at, current_sign_in_at, last_sign_in_at, current_sign_in_ip, last_sign_in_ip, privilege) VALUES 
-   ('Peter', 'Georgiev','5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8','peter@test.test',NOW(),NOW(),NOW(),NOW(),'0.0.0.0','0.0.0.0', 2),
-   ('Hanna', 'Yoo','5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8','hanna@test.test',NOW(),NOW(),NOW(),NOW(),'0.0.0.0','0.0.0.0', 2),
-   ('Renee', 'Liu','5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8','renee@test.test',NOW(),NOW(),NOW(),NOW(),'0.0.0.0','0.0.0.0', 2),
-   ('Sam', 'Bhuiyan','5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8','sam@test.test',NOW(),NOW(),NOW(),NOW(),'0.0.0.0','0.0.0.0', 2),
-   ('Eriq', 'Augustine','5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8','eriq@test.test',NOW(),NOW(),NOW(),NOW(),'0.0.0.0','0.0.0.0', 1),
-   ('Vishal', 'Venky','5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8','vishal@test.test',NOW(),NOW(),NOW(),NOW(),'0.0.0.0','0.0.0.0', 0);
+   ('Peter', 'Georgiev','75c979340a53d00cb0055d9b1b64d0ff8b2ca222a787c3d2d07f5c12420ed52ad131c5e31a2f544d','peter@test.test',NOW(),NOW(),NOW(),NOW(),'0.0.0.0','0.0.0.0', 2),
+   ('Hanna', 'Yoo','c8ce8d9f4cb8e6d8db9cc9fe27c3542b3a0854a686213939600448f323ad091c4a9f74d68b02e9fe','hanna@test.test',NOW(),NOW(),NOW(),NOW(),'0.0.0.0','0.0.0.0', 2),
+   ('Renee', 'Liu','6e21b0fa9d1bf36918de0ec988b8223077ad4c3d9360a046a4e195d02d687dc2ed482351d50e04c0','renee@test.test',NOW(),NOW(),NOW(),NOW(),'0.0.0.0','0.0.0.0', 2),
+   ('Sam', 'Bhuiyan','c130c4424fc5fb196c960b6de928291471ebebe7d3a0dc34db575eb256aae07af2ee73a527195577','sam@test.test',NOW(),NOW(),NOW(),NOW(),'0.0.0.0','0.0.0.0', 2),
+   ('Eriq', 'Augustine','f54f901bb496f5d75400005d290f7b396fec63e0d2f1191ca181f6faef6fc87b2451e776202632fa','eriq@test.test',NOW(),NOW(),NOW(),NOW(),'0.0.0.0','0.0.0.0', 1),
+   ('Vishal', 'Venky','a37dd467b0cfb298ff84c48f28b7cbe0dd1df705097e9f0865ac8e37d9925bfa4f89084b678aa65f','vishal@test.test',NOW(),NOW(),NOW(),NOW(),'0.0.0.0','0.0.0.0', 0);
 
 INSERT INTO Rooms VALUES
    ('RND','Recluse and defiance',1,'King',2,150,'modern'),
