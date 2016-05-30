@@ -12,6 +12,7 @@ CREATE TABLE Users (
   current_sign_in_ip VARCHAR(15) NOT NULL,
   last_sign_in_ip VARCHAR(15) NOT NULL,
   privilege INT NOT NULL,
+  birthday DATE NOT NULL,
   CONSTRAINT U_PK PRIMARY KEY(id)
 );
 
