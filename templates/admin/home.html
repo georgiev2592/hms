@@ -20,57 +20,51 @@ $var user: $user
 <br/>
 <div class="row">
     <div class="col-sm-12">
-        <div>
-        	<table class="table table-striped">
-          <caption>List of Users</caption>
-        		<tr>
-                  	<th>name</th>
-                  	<th>email</th>
-                  	<th>created_at</th>
-                  	<th>updated_at</th>
-                  	<th>sign_in_count</th>
-                  	<th>current_sign_in_at</th>
-                  	<th>last_sign_in_at</th>
-                  	<th>current_sign_in_ip</th>
-                  	<th>last_sign_in_ip</th>
-                  	<th>privilege</th>
-                  	<th>Edit</th>
-                  	<th>Delete</th>
-                    $for user in list_of_users
-                        <tr>
-                          <td>$user['first_name'] $user['last_name'] </td>
-                          <td>$user['email']</td>
-                          <td>$user['created_at']</td>
-                          <td>$user['updated_at']</td>
-                          <td>$user['sign_in_count']</td>
-                          <td>$user['current_sign_in_at']</td>
-                          <td>$user['last_sign_in_at']</td>
-                          <td>$user['current_sign_in_ip']</td>
-                          <td>$user['last_sign_in_ip']</td>
-                          <td>$user['privilege']</td>
-                          <td><a href="/edit/$user['id']" class="btn btn-warning btn-block">Edit</a></td>
-                          <td><a href="/delete/$user['id']" class="btn btn-danger btn-block">Delete</a></td>
-                        </tr>
-                      </tr>
-              	</tr>
-                <table class="table table-striped">
-                <caption>List of Comments</caption>
-                <tr>
-                    <th>id</th>
-                    <th>name</th>
-                    <th>email</th>
-                    <th>content</th>
-                    $for comment in list_of_comments
-                        <tr>
-                          <td>$comment['id']</td>
-                          <td>$comment['name']</td>
-                          <td>$comment['email']</td>
-                          <td>$comment['content']</td>
-                        </tr>
-                      </tr>
-                </tr>
-          </table>
-        	</table>
-        </div>
+    	<table class="table table-striped">
+      		<caption>List of Users</caption>
+    		<tr>
+              	<th>name</th>
+              	<th>email</th>
+              	<th>created_at</th>
+              	<th>updated_at</th>
+              	<th>current_sign_in</th>
+              	<th>last_sign_in</th>
+              	<th>current_ip</th>
+              	<th>last_ip</th>
+              	<th>privilege</th>
+              	<th>Edit</th>
+              	<th>Delete</th>
+                $for user in list_of_users
+                    <tr>
+                      	<td>$user['first_name'] $user['last_name'] </td>
+                      	<td>$user['email']</td>
+                      	<td>$user['created_at']</td>
+                      	<td>$user['updated_at']</td>
+                      	<td>$user['current_sign_in_at']</td>
+                      	<td>$user['last_sign_in_at']</td>
+                      	<td>$user['current_sign_in_ip']</td>
+                      	<td>$user['last_sign_in_ip']</td>
+                  		<td>$user['privilege']</td>
+                      	<td><a href="/users/edit/$user['id']" class="btn btn-warning btn-block">Edit</a></td>
+                      	<td><a href="/users/delete/$user['id']" class="btn btn-danger btn-block">Delete</a></td>
+                    </tr>
+          	</tr>
+        </table>
+        <table class="table table-striped">
+            <caption>List of Comments</caption>
+            <tr>
+                <th>id</th>
+                <th>name</th>
+                <th>email</th>
+                <th>content</th>
+                $for comment in list_of_comments
+                    <tr>
+                      	<td>$comment['id']</td>
+                      	<td>$comment['name']</td>
+                      	<td>$comment['email']</td>
+                      	<td>$comment['content']</td>
+                    </tr>
+            </tr>
+  		</table>
     </div><!-- /.col -->
 </div><!-- /.row -->

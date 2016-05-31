@@ -16,7 +16,8 @@ urls = (
     '/register', 'Register',
     '/home', 'Home',
     '/about', 'About',
-    '/contact', 'Contact'
+    '/contact', 'Contact',
+    '/users/edit/([0-9])', 'UpdateUser' 
 )
 
 app = web.application(urls, globals())
@@ -80,53 +81,30 @@ class Login:
         salt = ident['encrypted_password'][:40]
         pw = hashlib.sha1(salt + form.d.password).hexdigest()
 
-        # try:
-        if pw == ident['encrypted_password'][40:]:
-            session.login = 1
-            session.privilege = ident['privilege']
-            session.name = ident['first_name'] + ' ' + ident['last_name']
-            render = create_render(session.privilege)
+        try:
+            if pw == ident['encrypted_password'][40:]:
+                session.login = 1
+                session.privilege = ident['privilege']
+                session.name = ident['first_name'] + ' ' + ident['last_name']
 
-            list_of_users = self._generateList()
-            list_of_comments = self._generateListComments()
+                update_user_current_login(ident)
 
-            return render.home('HMS | Home', ident['first_name'] + ' ' + ident['last_name'], '', '', '', list_of_users, list_of_comments)
-        else:
+                render = create_render(session.privilege)
+
+                list_of_users = generate_user_list()
+                list_of_comments = generate_comments_list()
+
+                return render.home('HMS | Home', ident['first_name'] + ' ' + ident['last_name'], '', '', '', list_of_users, list_of_comments)
+            else:
+                session.login = 0
+                session.privilege = -1
+                render = create_render(session.privilege)
+                return render.index('HMS | Login', form, '', '', 'Username/Password Incorrect')
+        except:
             session.login = 0
             session.privilege = -1
             render = create_render(session.privilege)
             return render.index('HMS | Login', form, '', '', 'Username/Password Incorrect')
-        # except:
-        #     session.login = 0
-        #     session.privilege = -1
-        #     render = create_render(session.privilege)
-        #     return render.index('HMS | Login', form, '', '', 'Username/Password Incorrect')
-
-    def _generateList(self):
-        cur.execute('SELECT * FROM Users')
-        count = 0
-
-        for row in cur.fetchall():
-            count += 1
-
-        cur.execute('SELECT * FROM Users')
-        list_of_users = [fetchOneAssoc(cur) for k in range(count)]
-
-        print list_of_users
-        return list_of_users
-
-    def _generateListComments(self):
-        cur.execute('SELECT * FROM Comments')
-        count = 0
-
-        for row in cur.fetchall():
-            count += 1
-
-        cur.execute('SELECT * FROM Comments')
-        list_of_comments = [fetchOneAssoc(cur) for k in range(count)]
-
-        print list_of_comments
-        return list_of_comments
 
 class Register:
     register_form = form.Form(
@@ -134,7 +112,7 @@ class Register:
             form.notnull,
             description = "First Name",
             class_ = "form-control",
-            placeholder='Enter employee first name'),
+            placeholder = 'Enter employee first name'),
         form.Textbox("last_name",
             form.notnull,
             description = "Last Name",
@@ -172,25 +150,19 @@ class Register:
 
         if logged():
             usr = 'placeholder'
-            # render = create_render(session.privilege)
-            # return render.register("HMS | Register", self.nullform, "", "", "Already logged in.")
-        else:
-            # session.login = 0
-            # session.privilege = -1
-            pass
         
         render = create_render(session.privilege)
-        return render.register("HMS | Register", self.register_form(), usr, "", "")
+        return render.register("HMS | Register", self.register_form(), 'Register New Employee', usr, "", "")
 
     def POST(self):
         form = self.register_form()
-        msg = ""
-        err = ""
+        msg = ''
+        err = ''
         
         if not form.validates():
             session.login = 0
             session.privilege = -1
-            err = "Invalid fields."
+            err = 'Invalid fields.'
         else:
 
             cur.execute('SELECT * FROM Users WHERE email=%s', (form.d.email))
@@ -200,33 +172,30 @@ class Register:
                 if form.d.email == ident['email']:
                     session.login = 0
                     session.privilege = -1
-                    err = "User already registered."
+                    err = 'User already registered.'
                 else:
                     self.__helper(form)
-                    msg = "User registered."
+                    msg = 'User registered.'
             except:
                 self.__helper(form)
-                msg = "User registered."
+                msg = 'User registered.'
 
-        list_of_users = self._generateList()
+        list_of_users = generate_user_list()
+        list_of_comments = generate_comments_list()
 
         render = create_render(session.privilege)
-        return render.home('HMS | Home', session.name, '', msg, '', list_of_users)
+        return render.home('HMS | Home', session.name, '', msg, '', list_of_users, list_of_comments)
 
     def __helper(self, form):
         salt = hashlib.sha1(urandom(16)).hexdigest()
 
         #SQL query to INSERT a record into the table FACTRESTTBL.
         cur.execute('''INSERT INTO Users (first_name, last_name, encrypted_password, email, created_at, updated_at, current_sign_in_at, last_sign_in_at, current_sign_in_ip, last_sign_in_ip, privilege)
-                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)''',
+                        VALUES (%s, %s, %s, %s, NOW(), NOW(), NOW(), NOW(), %s, %s, %s)''',
                         (form.d.first_name, 
                         form.d.last_name, 
                         salt + hashlib.sha1(salt + form.d.password).hexdigest(),
                         form.d.email,
-                        self.__stamp(datetime.now()),
-                        self.__stamp(datetime.now()),
-                        self.__stamp(datetime.now()),
-                        self.__stamp(datetime.now()),
                         web.ctx['ip'],
                         web.ctx['ip'],
                         form.d.privilege))
@@ -234,9 +203,102 @@ class Register:
         # Commit your changes in the database
         db.commit()
 
-    def __stamp(self, dt):
-      # turns a python datetime object into a unix time stamp (seconds)
-      return int(time.mktime( dt.timetuple() ))
+class UpdateUser:
+    update_form = form.Form(
+        form.Textbox("first_name",
+            form.notnull,
+            description = "First Name",
+            class_ = "form-control",
+            placeholder = 'Enter employee first name'),
+        form.Textbox("last_name",
+            form.notnull,
+            description = "Last Name",
+            class_ = "form-control",
+            placeholder='Enter employee last name'),
+        form.Textbox("email",
+            form.notnull,
+            description = "Email",
+            class_ = "form-control",
+            placeholder='Enter employee email'),
+        form.Dropdown('privilege', 
+            [('0', 'Front Desk'), ('1', 'Cleaning Personnel'), ('2', 'Admin')],
+            description = "Role",
+            class_ = "form-control",
+            placeholder='Select employee work position'),
+        form.Password("password",
+            description = "New Password",
+            class_ = "form-control",
+            placeholder='Enter employee password'),
+        form.Password('confirm_password',
+            description = "Confirm New Password",
+            class_ = "form-control",
+            placeholder='Confirm employee password'),
+        form.Button("Update",
+            id='updateButton',
+            class_ = "btn btn-default btn-block"),
+        validators = [form.Validator("Passwords didn't match.", lambda i: i.password == i.confirm_password)]
+        )
+
+    nullform = form.Form()
+    def GET(self, id):
+        form = self.update_form()
+
+        cur.execute('SELECT * FROM Users WHERE id=%s', id)
+        ident = fetchOneAssoc(cur)
+
+        form['first_name'].value = ident['first_name']
+        form['last_name'].value = ident['last_name']
+        form['email'].value = ident['email']
+        form['privilege'].value = ident['privilege']
+
+        render = create_render(session.privilege)
+        return render.register('HMS | Update User', form, 'Update Employee Profile', session.name, '', '')
+
+    def POST(self, id):
+        form = self.update_form()
+
+        err = ''
+
+        cur.execute('SELECT * FROM Users WHERE id=%s', id)
+        ident = fetchOneAssoc(cur)
+
+        form['first_name'].value = ident['first_name']
+        form['last_name'].value = ident['last_name']
+        form['email'].value = ident['email']
+
+        print ident['privilege']
+        print form['privilege'].value
+
+        form['privilege'].value = ident['privilege']
+
+        if not form.validates():
+            session.login = 0
+            session.privilege = -1
+            err = 'Invalid fields.'
+        else:
+            self.__helper(form, id)
+
+        list_of_users = generate_user_list()
+        list_of_comments = generate_comments_list()
+
+        render = create_render(session.privilege)
+        return render.home('HMS | Home', session.name, '', '', err, list_of_users, list_of_comments)
+
+    def __helper(self, form, id):
+        salt = hashlib.sha1(urandom(16)).hexdigest()
+
+        cur.execute('UPDATE Users SET first_name = %s WHERE id = %s', (form.d.first_name, id))
+        cur.execute('UPDATE Users SET last_name = %s WHERE id = %s', (form.d.last_name, id))
+        cur.execute('UPDATE Users SET email = %s WHERE id = %s', (form.d.email, id))
+        cur.execute('UPDATE Users SET privilege = %s WHERE id = %s', (form.d.privilege, id))
+
+        if form.d.password != '':
+            cur.execute('UPDATE Users SET encrypted_password = %s WHERE id = %s', (form.d.password, id))
+
+        cur.execute('UPDATE Users SET updated_at = NOW() WHERE id = %s', id)
+
+        # Commit your changes in the database
+        db.commit()
 
 class Logout:
     def GET(self):
@@ -246,7 +308,7 @@ class Logout:
 class Home:
     def GET(self):
         render = create_render(session.privilege)
-        return render.home('HMS | Home', '', '', '', '')
+        return render.home('HMS | Home', session.name, '', '', '', '', '')
 
 class About:
     def GET(self):
@@ -334,6 +396,10 @@ def create_render(privilege):
         render = web.template.render('templates/', base='layout')
     return render
 
+def stamp(dt):
+    # turns a python datetime object into a unix time stamp (seconds)
+    return int(time.mktime( dt.timetuple() ))
+
 def fetchOneAssoc(cursor):
     data = cursor.fetchone()
     if data == None :
@@ -346,6 +412,42 @@ def fetchOneAssoc(cursor):
         dict[name[0]] = value
 
     return dict
+
+def generate_user_list():
+    cur.execute('SELECT * FROM Users')
+    count = 0
+
+    for row in cur.fetchall():
+        count += 1
+
+    cur.execute('SELECT * FROM Users')
+    list_of_users = [fetchOneAssoc(cur) for k in range(count)]
+
+    return list_of_users
+
+def generate_comments_list():
+    cur.execute('SELECT * FROM Comments')
+    count = 0
+
+    for row in cur.fetchall():
+        count += 1
+
+    cur.execute('SELECT * FROM Comments')
+    list_of_comments = [fetchOneAssoc(cur) for k in range(count)]
+
+    return list_of_comments
+
+def update_user_current_login(ident):
+    cur.execute('UPDATE Users SET last_sign_in_at = current_sign_in_at WHERE email = %s', ident['email'])
+    cur.execute('UPDATE Users SET current_sign_in_at = NOW() WHERE email = %s', ident['email'])
+
+    cur.execute('UPDATE Users SET last_sign_in_ip = current_sign_in_ip WHERE email = %s', ident['email'])
+    cur.execute('UPDATE Users SET current_sign_in_ip = %s WHERE email = %s', (web.ctx['ip'], ident['email']))
+
+    cur.execute('UPDATE Users SET sign_in_count = sign_in_count + 1 WHERE email = %s', ident['email'])
+
+    # Commit your changes in the database
+    db.commit()
 
 if __name__ == "__main__":
     app.run()

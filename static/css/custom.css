@@ -1,14 +1,22 @@
+.tittle-line {
+    background-color: #898989;
+    display: inline-block;
+    height: 3px;
+    margin-bottom: 16px;
+    width: 60px;
+}
+
 @media all and (max-width:768px){
-    table{
+    table {
         width:100%;
     }
 
-    td{
+    td {
         display:block;
         width:100%;
     }
 
-    tr{
+    tr {
         display:block;
         margin-bottom:30px;
     }
