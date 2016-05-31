@@ -8,8 +8,6 @@ import time
 
 web.config.debug = False
 
-# render = web.template.render('templates/', base='layout')
-
 urls = (
     '/', 'Login',
     '/logout', 'Logout',
@@ -21,7 +19,6 @@ urls = (
 )
 
 app = web.application(urls, globals())
-# db = web.database(dbn='mysql', db='hms', user='wreckingball', pw='patricksux', host='hms.cytvwijmz1je.us-west-2.rds.amazonaws.com')
 db = MySQLdb.connect(host = 'hms.cytvwijmz1je.us-west-2.rds.amazonaws.com',
                      user = 'wreckingball',
                      passwd = 'hmsFinalProject',
@@ -307,8 +304,11 @@ class Logout:
 
 class Home:
     def GET(self):
+        list_of_users = generate_user_list()
+        list_of_comments = generate_comments_list()
+
         render = create_render(session.privilege)
-        return render.home('HMS | Home', session.name, '', '', '', '', '')
+        return render.home('HMS | Home', session.name, '', '', '', list_of_users, list_of_comments)
 
 class About:
     def GET(self):
