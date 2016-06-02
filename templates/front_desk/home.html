@@ -11,6 +11,13 @@ $var user: $user
     </div><!-- /.col -->
 </div><!-- /.row -->
 <div class="row">
+    <div class="col-md-4 col-md-offset-4 col-sm-8 col-sm-offset-2">
+        <div>
+            <a href="/reservation" class="btn btn-default btn-block">Add New Reservation</a>
+        </div>
+    </div><!-- /.col -->
+</div><!-- /.row -->
+<div class="row">
     <div class="col-sm-12">
       <table class="table table-striped">
             <caption>List of Reservations</caption>
@@ -28,6 +35,7 @@ $var user: $user
                 <th>maxOcc</th>
                 <th>basePrice</th>
                 <th>decor</th>
+                
                 $for reservation in list_of_reservations
                     <tr>
                         <td>$reservation['code']</td>

@@ -15,7 +15,8 @@ urls = (
     '/home', 'Home',
     '/about', 'About',
     '/contact', 'Contact',
-    '/users/edit/([0-9])', 'UpdateUser' 
+    '/users/edit/([0-9])', 'UpdateUser',
+    '/reservation', 'Reservation'
 )
 
 app = web.application(urls, globals())
@@ -88,9 +89,7 @@ class Login:
 
             render = create_render(session.privilege)
 
-            list_of_users = generate_user_list()
-            list_of_comments = generate_comments_list()
-            list_of_reservations = generate_reservations_list()
+            list_of_users, list_of_comments, list_of_reservations = setup_home(session.privilege)
 
             return render.home('HMS | Home', ident['first_name'] + ' ' + ident['last_name'], '', '', '', list_of_users, list_of_comments, list_of_reservations)
         else:
@@ -180,9 +179,136 @@ class Register:
                 self.__helper(form)
                 msg = 'User registered.'
 
-        list_of_users = generate_user_list()
-        list_of_comments = generate_comments_list()
-        list_of_reservations = generate_reservations_list()
+        list_of_users, list_of_comments, list_of_reservations = setup_home(session.privilege)
+
+        render = create_render(session.privilege)
+        return render.home('HMS | Home', session.name, '', msg, '', list_of_users, list_of_comments, list_of_reservations)
+
+    def __helper(self, form):
+        salt = hashlib.sha1(urandom(16)).hexdigest()
+
+        #SQL query to INSERT a record into the table FACTRESTTBL.
+        cur.execute('''INSERT INTO Users (first_name, last_name, encrypted_password, email, created_at, updated_at, current_sign_in_at, last_sign_in_at, current_sign_in_ip, last_sign_in_ip, privilege)
+                        VALUES (%s, %s, %s, %s, NOW(), NOW(), NOW(), NOW(), %s, %s, %s)''',
+                        (form.d.first_name, 
+                        form.d.last_name, 
+                        salt + hashlib.sha1(salt + form.d.password).hexdigest(),
+                        form.d.email,
+                        web.ctx['ip'],
+                        web.ctx['ip'],
+                        form.d.privilege))
+
+        # Commit your changes in the database
+        db.commit()
+
+class Reservation:
+    register_form = form.Form(
+        form.Textbox("code",
+            form.notnull,
+            description = "Code",
+            class_ = "form-control",
+            placeholder = 'Enter code for reservation code'),
+        form.Textbox("room",
+            form.notnull,
+            description = "Room",
+            class_ = "form-control",
+            placeholder='Enter the room code'),
+        form.Textbox("checkIn",
+            form.notnull,
+            description = "Check In",
+            class_ = "form-control",
+            placeholder='Enter the check in date'),
+        form.Textbox("checkOut",
+            form.notnull,
+            description = "Check Out",
+            class_ = "form-control",
+            placeholder='Enter the check out date'),
+        form.Textbox("rate",
+            form.notnull,
+            description = "Rate",
+            class_ = "form-control",
+            placeholder='Enter the nightly rate'),
+        form.Textbox("adults",
+            form.notnull,
+            description = "Adults",
+            class_ = "form-control",
+            placeholder='Enter how many adults'),
+        form.Textbox("kids",
+            form.notnull,
+            description = "Kids",
+            class_ = "form-control",
+            placeholder='Enter how many kids'),
+        form.Textbox("roomName",
+            form.notnull,
+            description = "Room Name",
+            class_ = "form-control",
+            placeholder='Enter the room name'),
+        form.Textbox("beds",
+            form.notnull,
+            description = "Beds",
+            class_ = "form-control",
+            placeholder='Enter the amount of beds'),
+        form.Textbox("bedType",
+            form.notnull,
+            description = "Bed Type",
+            class_ = "form-control",
+            placeholder='Enter the bed type'),
+        form.Textbox("maxOcc",
+            form.notnull,
+            description = "Max Occupancy",
+            class_ = "form-control",
+            placeholder='Enter the max occupancy'),
+        form.Textbox("basePrice",
+            form.notnull,
+            description = "Base Price",
+            class_ = "form-control",
+            placeholder='Enter the base price'),
+        form.Textbox("decor",
+            form.notnull,
+            description = "Room Decor",
+            class_ = "form-control",
+            placeholder='Enter the room decor')
+
+        )
+
+    nullform = form.Form()
+
+    def GET(self):
+        usr = ''
+
+        if logged():
+            usr = 'placeholder'
+        print("hello")
+        render = create_render(session.privilege)
+        return render.reservation("HMS | Reservation", self.register_form(), 'Add New Reservation', usr, "", "")
+
+    def POST(self):
+        form = self.register_form()
+        msg = ''
+        err = ''
+        
+        if not form.validates():
+            session.login = 0
+            session.privilege = -1
+            err = 'Invalid fields.'
+        else:
+# EDIT ME!
+            cur.execute('SELECT * FROM Users WHERE email=%s', (form.d.email))
+            ident = fetchOneAssoc(cur)
+
+            try:
+                if form.d.email == ident['email']:
+                    session.login = 0
+                    session.privilege = -1
+                    err = 'User already registered.'
+                else:
+                    self.__helper(form)
+                    msg = 'User registered.'
+            except:
+                self.__helper(form)
+                msg = 'User registered.'
+
+        list_of_users, list_of_comments, list_of_reservations = setup_home(session.privilege)
 
         render = create_render(session.privilege)
         return render.home('HMS | Home', session.name, '', msg, '', list_of_users, list_of_comments, list_of_reservations)
@@ -279,9 +405,7 @@ class UpdateUser:
         else:
             self.__helper(form, id)
 
-        list_of_users = generate_user_list()
-        list_of_comments = generate_comments_list()
-        list_of_reservations = generate_reservations_list()
+        list_of_users, list_of_comments, list_of_reservations = setup_home(session.privilege)
 
         render = create_render(session.privilege)
         return render.home('HMS | Home', session.name, '', '', err, list_of_users, list_of_comments, list_of_reservations)
@@ -450,13 +574,13 @@ def generate_user_list():
     return list_of_users
 
 def generate_reservations_list():
-    cur.execute('SELECT * FROM Reservations Res JOIN Rooms Ro ON Res.room = Ro.roomCode')
+    cur.execute('SELECT * FROM Reservations Res JOIN Rooms Ro ON Res.room = Ro.roomCode JOIN Guests G ON G.reservation_code = Res.code')
     count = 0
 
     for row in cur.fetchall():
         count += 1
 
-    cur.execute('SELECT * FROM Reservations Res JOIN Rooms Ro ON Res.room = Ro.roomCode')
+    cur.execute('SELECT * FROM Reservations Res JOIN Rooms Ro ON Res.room = Ro.roomCode JOIN Guests G ON G.reservation_code = Res.code')
     list_of_reservations = [fetchOneAssoc(cur) for k in range(count)]
 
     return list_of_reservations
