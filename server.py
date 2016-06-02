@@ -78,30 +78,33 @@ class Login:
         salt = ident['encrypted_password'][:40]
         pw = hashlib.sha1(salt + form.d.password).hexdigest()
 
-        try:
-            if pw == ident['encrypted_password'][40:]:
-                session.login = 1
-                session.privilege = ident['privilege']
-                session.name = ident['first_name'] + ' ' + ident['last_name']
+        #try:
+        if pw == ident['encrypted_password'][40:]:
+            session.login = 1
+            session.privilege = ident['privilege']
+            session.name = ident['first_name'] + ' ' + ident['last_name']
 
-                update_user_current_login(ident)
+            update_user_current_login(ident)
 
-                render = create_render(session.privilege)
+            render = create_render(session.privilege)
 
-                list_of_users = generate_user_list()
-                list_of_comments = generate_comments_list()
+            list_of_users = generate_user_list()
+            list_of_comments = generate_comments_list()
+            list_of_reservations = generate_reservations_list()
 
-                return render.home('HMS | Home', ident['first_name'] + ' ' + ident['last_name'], '', '', '', list_of_users, list_of_comments)
-            else:
-                session.login = 0
-                session.privilege = -1
-                render = create_render(session.privilege)
-                return render.index('HMS | Login', form, '', '', 'Username/Password Incorrect')
+            return render.home('HMS | Home', ident['first_name'] + ' ' + ident['last_name'], '', '', '', list_of_users, list_of_comments, list_of_reservations)
+        else:
+            session.login = 0
+            session.privilege = -1
+            render = create_render(session.privilege)
+            return render.index('HMS | Login', form, '', '', 'Username/Password Incorrect')
+        '''
         except:
             session.login = 0
             session.privilege = -1
             render = create_render(session.privilege)
             return render.index('HMS | Login', form, '', '', 'Username/Password Incorrect')
+        '''
 
 class Register:
     register_form = form.Form(
@@ -179,9 +182,10 @@ class Register:
 
         list_of_users = generate_user_list()
         list_of_comments = generate_comments_list()
+        list_of_reservations = generate_reservations_list()
 
         render = create_render(session.privilege)
-        return render.home('HMS | Home', session.name, '', msg, '', list_of_users, list_of_comments)
+        return render.home('HMS | Home', session.name, '', msg, '', list_of_users, list_of_comments, list_of_reservations)
 
     def __helper(self, form):
         salt = hashlib.sha1(urandom(16)).hexdigest()
@@ -277,9 +281,10 @@ class UpdateUser:
 
         list_of_users = generate_user_list()
         list_of_comments = generate_comments_list()
+        list_of_reservations = generate_reservations_list()
 
         render = create_render(session.privilege)
-        return render.home('HMS | Home', session.name, '', '', err, list_of_users, list_of_comments)
+        return render.home('HMS | Home', session.name, '', '', err, list_of_users, list_of_comments, list_of_reservations)
 
     def __helper(self, form, id):
         salt = hashlib.sha1(urandom(16)).hexdigest()
@@ -304,11 +309,13 @@ class Logout:
 
 class Home:
     def GET(self):
-        list_of_users = generate_user_list()
-        list_of_comments = generate_comments_list()
+        # list_of_users = generate_user_list()
+        # list_of_comments = generate_comments_list()
+
+        list_of_users, list_of_comments, list_of_reservations = setup_home(session.privilege)
 
         render = create_render(session.privilege)
-        return render.home('HMS | Home', session.name, '', '', '', list_of_users, list_of_comments)
+        return render.home('HMS | Home', session.name, '', '', '', list_of_users, list_of_comments, list_of_reservations)
 
 class About:
     def GET(self):
@@ -396,6 +403,23 @@ def create_render(privilege):
         render = web.template.render('templates/', base='layout')
     return render
 
+def setup_home(privilege):
+    list_of_users = None
+    list_of_comments = None
+    list_of_reservations = None
+
+    if logged():
+        if privilege == 0:
+            list_of_reservations = generate_reservations_list()
+        elif privilege == 1:
+            list_of_reservations = generate_reservations_list()
+        elif privilege == 2:
+            list_of_users = generate_user_list()
+            list_of_reservations = generate_reservations_list()
+            list_of_comments = generate_comments_list()
+
+    return list_of_users, list_of_comments, list_of_reservations
+
 def stamp(dt):
     # turns a python datetime object into a unix time stamp (seconds)
     return int(time.mktime( dt.timetuple() ))
@@ -424,6 +448,18 @@ def generate_user_list():
     list_of_users = [fetchOneAssoc(cur) for k in range(count)]
 
     return list_of_users
+
+def generate_reservations_list():
+    cur.execute('SELECT * FROM Reservations Res JOIN Rooms Ro ON Res.room = Ro.roomCode')
+    count = 0
+
+    for row in cur.fetchall():
+        count += 1
+
+    cur.execute('SELECT * FROM Reservations Res JOIN Rooms Ro ON Res.room = Ro.roomCode')
+    list_of_reservations = [fetchOneAssoc(cur) for k in range(count)]
+
+    return list_of_reservations
 
 def generate_comments_list():
     cur.execute('SELECT * FROM Comments')
