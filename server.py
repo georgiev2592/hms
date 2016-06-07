@@ -247,16 +247,41 @@ class Reservation:
             id='registerButton',
             class_ = "btn btn-default btn-block")
 
-        )
+    )
+    guest_formNew = form.Form(
+        form.Textbox("first_name",
+            form.notnull,
+            description = "First Name",
+            class_ = "form-control",
+            placeholder='Enter your first name'),
+        form.Textbox("last_name",
+            form.notnull,
+            description = "Last Name",
+            class_ = "form-control",
+            placeholder='Enter your last name'),
+        form.Textbox("email",
+            form.notnull,
+            description = "Emal",
+            class_ = "form-control",
+            placeholder='Enter your email')
+    )
+    guest_formExisting = form.Form(
+        form.Textbox("last_name",
+            form.notnull,
+            description = "Last Name",
+            class_ = "form-control",
+            placeholder='Enter your last name')
+    )
 
     def GET(self):
+
         usr = ''
 
         if logged():
             usr = 'placeholder'
 
         render = create_render(session.privilege)
-        return render.reservation('HMS | Reservation', self.reservation_form(), 'Add new Reservation', usr, '', '')
+        return render.reservation('HMS | Reservation', self.reservation_form(), self.guest_formNew(), self.guest_formExisting(), 'Add new Reservation', usr, '', '')
 
     def POST(self):
         form = self.reservation_form()
@@ -279,8 +304,9 @@ class Reservation:
         print 'room name is: ', form.d.roomName, 'checkin date is: ', form.d.checkIn
 
         #SQL query to INSERT a record into the table FACTRESTTBL.
+        print form.d.checkIn, form.d.checkOut
         cur.execute('''INSERT INTO Reservations (room, checkIn, checkOut, rate, adults, kids)
-                        VALUES (%s, STR_TO_DATE(%s, '%%d/%%m/%%y'), STR_TO_DATE(%s, '%%d/%%m/%%y'), %s, %s, %s)''',
+                        VALUES (%s, STR_TO_DATE(%s, '%'%d/'%'%m/'%%y'), STR_TO_DATE(%s, '%%d/%%m/%%y'), %s, %s, %s)''',
                         (form.d.roomName,
                         form.d.checkIn, 
                         form.d.checkOut, 
@@ -288,7 +314,7 @@ class Reservation:
                         form.d.adults,
                         form.d.kids))
 
-
+        cur.execute('SELECT * FROM Reservations')
         # Commit your changes in the database
         db.commit()
 

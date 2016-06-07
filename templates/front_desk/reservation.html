@@ -1,4 +1,4 @@
-$def with (title, form, form_name, user, msg, error)
+$def with (title, form, formNew, formExisting, form_name, user, msg, error)
 $var title: $title
 $var user: $user
 
@@ -14,6 +14,14 @@ $var user: $user
             $if error != "":
                 <p><font color="red"> $error </font></p>
 
+            <label class="radio-inline"><input type="radio" name="optradio">New Guest</label>
+            <label class="radio-inline"><input type="radio" name="optradio">Existing Guest</label>
+            <div id = "newForm">
+                $:formNew.render()
+            </div>
+            <div id = "formExisting">
+                $:formExisting.render()
+            </div>
             $:form.render()
 
         </form>
