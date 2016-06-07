@@ -37,24 +37,24 @@ INSERT INTO Reservations VALUES
    (77032,'RND',STR_TO_DATE('14-MAR-10', '%d-%b-%y'),STR_TO_DATE('17-MAR-10', '%d-%b-%y'),172.50,1,0),
    (30043,'RND',STR_TO_DATE('17-MAR-10', '%d-%b-%y'),STR_TO_DATE('18-MAR-10', '%d-%b-%y'),150.00,2,0);
    
-INSERT INTO Guests VALUES
-   (0, 'ERASMO', 'KLEVER', 49, 47496),
-   (1, 'EUGENIO', 'HOOLEY', 32, 41112),
-   (2, 'JERROD', 'WISWELL', 43, 76809),
-   (3, 'PHEBE', 'ALMANZA', 28, 70172),
-   (4, 'CLINTON', 'BOBROW', 72, 44358),
-   (5, 'LIANA', 'RENSCH', 34, 55344),
-   (6, 'ANNETT', 'ABRAHAMS', 51, 99471),
-   (7, 'YUK', 'EVERITT', 25, 81473),
-   (8, 'GARRY', 'NANI', 37, 49253),
-   (9, 'DONTE', 'KLIMKO', 43, 16748),
-   (10, 'JESSICA', 'SULOUFF', 62, 69316),
-   (11, 'CLINT', 'BONIOL', 56, 69844),
-   (12, 'ROD', 'ARANAS', 48, 96839),
-   (13, 'TEODORO', 'NEIN', 37, 43911),
-   (14, 'ELEASE', 'SCHLADWEILER', 41, 48382),
-   (15, 'HERBERT', 'FRANC', 64, 77032),
-   (16, 'RHEA', 'HELFRITZ', 38, 30043);
+INSERT INTO Guests (first_name, last_name, email, reservation_code) VALUES
+   ('ERASMO', 'KLEVER', 'erasmo.klever@test.test', 47496),
+   ('EUGENIO', 'HOOLEY', 'eugenio.hooley@test.test', 41112),
+   ('JERROD', 'WISWELL', 'jerrod.wiswell@test.test', 76809),
+   ('PHEBE', 'ALMANZA', 'phebe almanza@test.test', 70172),
+   ('CLINTON', 'BOBROW', 'clinton@bobrow@test.test', 44358),
+   ('LIANA', 'RENSCH', 'liana.rensch@test.test', 55344),
+   ('ANNETT', 'ABRAHAMS', 'annett.abrahams@test.test', 99471),
+   ('YUK', 'EVERITT', 'yuk.everitt@test.test', 81473),
+   ('GARRY', 'NANI', 'garry.nani@test.test', 49253),
+   ('DONTE', 'KLIMKO', 'donte.klimko@test.test', 16748),
+   ('JESSICA', 'SULOUFF', 'jessica.sulouff@test.test', 69316),
+   ('CLINT', 'BONIOL', 'clint.boniol@test.test', 69844),
+   ('ROD', 'ARANAS', 'rod.aranas@test.test', 96839),
+   ('TEODORO', 'NEIN', 'teodoro.nein@test.test', 43911),
+   ('ELEASE', 'SCHLADWEILER', 'elease.schladweiler@test.test', 48382),
+   ('HERBERT', 'FRANC', 'herbert.franc@test.test', 77032),
+   ('RHEA', 'HELFRITZ', 'rhea.helfritz@test.test', 30043);
 
 INSERT INTO Comments VALUES
    (1, 'CLINTON', 'something@test.test', 'insert your comment here');

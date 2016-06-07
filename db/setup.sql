@@ -39,7 +39,7 @@ CREATE TABLE Reservations (
 );
 
 CREATE TABLE Guests (
-    id INT NOT NULL,
+    id INT NOT NULL AUTO_INCREMENT,
     first_name VARCHAR(80) NOT NULL,
     last_name VARCHAR(80) NOT NULL,
     email VARCHAR(100) NOT NULL,

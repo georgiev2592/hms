@@ -287,36 +287,63 @@ class Reservation:
 
     def POST(self):
         form = self.reservation_form()
+        newGuestForm = self.guest_formNew()
+        existingGuestForm = self.guest_formExisting()
+
         msg = ''
         err = ''
+
+        newGuestForm.validates()
+        existingGuestForm.validates()
 
         if not form.validates():
             session.login = 0
             session.privilege = -1
             err = 'Invalid fields.'
         else:
-            self.__helper(form)
+            self.__helper(form, newGuestForm, existingGuestForm)
 
         list_of_users, list_of_comments, list_of_reservations = setup_home(session.privilege)
 
         render = create_render(session.privilege)
         return render.home('HMS | Home', session.name, '', msg, err, list_of_users, list_of_comments, list_of_reservations)
 
-    def __helper(self, form):
+    def __helper(self, form, guest_formNew, guest_formExisting):
         print 'room name is: ', form.d.roomName, 'checkin date is: ', form.d.checkIn
 
         #SQL query to INSERT a record into the table FACTRESTTBL.
+        
         print form.d.checkIn, form.d.checkOut
+        print guest_formNew.d.first_name, guest_formNew.d.last_name, guest_formNew.d.email
+        print guest_formExisting.d.email
+
         cur.execute('''INSERT INTO Reservations (room, checkIn, checkOut, rate, adults, kids)
-                        VALUES (%s, STR_TO_DATE(%s, '%'%d/'%'%m/'%%y'), STR_TO_DATE(%s, '%%d/%%m/%%y'), %s, %s, %s)''',
+                        VALUES (%s, STR_TO_DATE(%s, '%%m/%%d/%%Y'), STR_TO_DATE(%s, '%%m/%%d/%%Y'), %s, %s, %s)''',
                         (form.d.roomName,
                         form.d.checkIn, 
                         form.d.checkOut, 
                         form.d.rate,
                         form.d.adults,
-                        form.d.kids))
+                        form.d.kids))  
 
-        cur.execute('SELECT * FROM Reservations')
+        cur.execute('''SELECT code FROM Reservations WHERE room = %s AND checkIn = STR_TO_DATE(%s, '%%m/%%d/%%Y') AND checkOut = STR_TO_DATE(%s, '%%m/%%d/%%Y') AND rate = %s AND adults = %s AND kids = %s''', 
+            (form.d.roomName,
+            form.d.checkIn, 
+            form.d.checkOut, 
+            form.d.rate,
+            form.d.adults,
+            form.d.kids)) 
+
+        ident = fetchOneAssoc(cur)        
+
+        cur.execute('''INSERT INTO Guests (first_name, last_name, email, reservation_code)
+                VALUES (%s, %s, %s, %s)''',
+                (guest_formNew.d.first_name,
+                guest_formNew.d.last_name,
+                guest_formNew.d.email, 
+                ident['code']))
+
+        # cur.execute('SELECT * FROM Reservations')
         # Commit your changes in the database
         db.commit()
 
