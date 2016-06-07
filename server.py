@@ -15,7 +15,8 @@ urls = (
     '/home', 'Home',
     '/about', 'About',
     '/contact', 'Contact',
-    '/users/edit/([0-9])', 'UpdateUser',
+    '/users/edit/([0-9]+)', 'UpdateUser',
+    '/users/delete/([0-9]+)', 'DeleteUser',
     '/reservation', 'Reservation'
 )
 
@@ -422,6 +423,24 @@ class UpdateUser:
             cur.execute('UPDATE Users SET encrypted_password = %s WHERE id = %s', (form.d.password, id))
 
         cur.execute('UPDATE Users SET updated_at = NOW() WHERE id = %s', id)
+
+        # Commit your changes in the database
+        db.commit()
+
+class DeleteUser:
+    def GET(self, id):
+        err = ''
+        self.__helper(form, id)
+
+        list_of_users, list_of_comments, list_of_reservations = setup_home(session.privilege)
+
+        render = create_render(session.privilege)
+        return render.home('HMS | Home', session.name, '', '', err, list_of_users, list_of_comments, list_of_reservations)
+
+    def __helper(self, form, id):
+        print id
+
+        cur.execute('DELETE from Users WHERE id = %s', id)
 
         # Commit your changes in the database
         db.commit()
