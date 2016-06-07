@@ -212,27 +212,22 @@ class Register:
             print "Error: unable to send email"
 
 class Reservation:
-    register_form = form.Form(
-        form.Textbox("code",
-            form.notnull,
-            description = "Code",
+    reservation_form = form.Form(
+        form.Dropdown('roomName', 
+            [('AOB', 'Abscond or bolster'), ('CAS', 'Convoke and sanguine'), ('FNA', 'Frugal not apropos'), ('HBB', 'Harbinger but bequest'), ('IBD', 'Immutable before decorum'), ('IBS', 'Interim but salutary'), ('MWC', 'Mendicant with cryptic'), ('RND', 'Recluse and defiance'), ('RTE', 'Riddle to exculpate'), ('TAA', 'Thrift and accolade')],
+            description = "Room type",
             class_ = "form-control",
-            placeholder = 'Enter code for reservation code'),
-        form.Textbox("room",
-            form.notnull,
-            description = "Room",
-            class_ = "form-control",
-            placeholder='Enter the room code'),
+            placeholder='Select room type'),
         form.Textbox("checkIn",
             form.notnull,
             description = "Check In",
             class_ = "form-control",
-            placeholder='Enter the check in date'),
+            placeholder='mm/dd/yyyy'),
         form.Textbox("checkOut",
             form.notnull,
             description = "Check Out",
             class_ = "form-control",
-            placeholder='Enter the check out date'),
+            placeholder='mm/dd/yyyy'),
         form.Textbox("rate",
             form.notnull,
             description = "Rate",
@@ -248,94 +243,51 @@ class Reservation:
             description = "Kids",
             class_ = "form-control",
             placeholder='Enter how many kids'),
-        form.Textbox("roomName",
-            form.notnull,
-            description = "Room Name",
-            class_ = "form-control",
-            placeholder='Enter the room name'),
-        form.Textbox("beds",
-            form.notnull,
-            description = "Beds",
-            class_ = "form-control",
-            placeholder='Enter the amount of beds'),
-        form.Textbox("bedType",
-            form.notnull,
-            description = "Bed Type",
-            class_ = "form-control",
-            placeholder='Enter the bed type'),
-        form.Textbox("maxOcc",
-            form.notnull,
-            description = "Max Occupancy",
-            class_ = "form-control",
-            placeholder='Enter the max occupancy'),
-        form.Textbox("basePrice",
-            form.notnull,
-            description = "Base Price",
-            class_ = "form-control",
-            placeholder='Enter the base price'),
-        form.Textbox("decor",
-            form.notnull,
-            description = "Room Decor",
-            class_ = "form-control",
-            placeholder='Enter the room decor')
+        form.Button("Create Reservation",
+            id='registerButton',
+            class_ = "btn btn-default btn-block")
 
         )
-
-    nullform = form.Form()
 
     def GET(self):
         usr = ''
 
         if logged():
             usr = 'placeholder'
-        print("hello")
+
         render = create_render(session.privilege)
-        return render.reservation("HMS | Reservation", self.register_form(), 'Add New Reservation', usr, "", "")
+        return render.reservation('HMS | Reservation', self.reservation_form(), 'Add new Reservation', usr, '', '')
 
     def POST(self):
-        form = self.register_form()
+        form = self.reservation_form()
         msg = ''
         err = ''
-        
+
         if not form.validates():
             session.login = 0
             session.privilege = -1
             err = 'Invalid fields.'
         else:
-# EDIT ME!
-            cur.execute('SELECT * FROM Users WHERE email=%s', (form.d.email))
-            ident = fetchOneAssoc(cur)
-
-            try:
-                if form.d.email == ident['email']:
-                    session.login = 0
-                    session.privilege = -1
-                    err = 'User already registered.'
-                else:
-                    self.__helper(form)
-                    msg = 'User registered.'
-            except:
-                self.__helper(form)
-                msg = 'User registered.'
+            self.__helper(form)
 
         list_of_users, list_of_comments, list_of_reservations = setup_home(session.privilege)
 
         render = create_render(session.privilege)
-        return render.home('HMS | Home', session.name, '', msg, '', list_of_users, list_of_comments, list_of_reservations)
+        return render.home('HMS | Home', session.name, '', msg, err, list_of_users, list_of_comments, list_of_reservations)
 
     def __helper(self, form):
-        salt = hashlib.sha1(urandom(16)).hexdigest()
+        print 'room name is: ', form.d.roomName, 'checkin date is: ', form.d.checkIn
 
         #SQL query to INSERT a record into the table FACTRESTTBL.
-        cur.execute('''INSERT INTO Users (first_name, last_name, encrypted_password, email, created_at, updated_at, current_sign_in_at, last_sign_in_at, current_sign_in_ip, last_sign_in_ip, privilege)
-                        VALUES (%s, %s, %s, %s, NOW(), NOW(), NOW(), NOW(), %s, %s, %s)''',
-                        (form.d.first_name, 
-                        form.d.last_name, 
-                        salt + hashlib.sha1(salt + form.d.password).hexdigest(),
-                        form.d.email,
-                        web.ctx['ip'],
-                        web.ctx['ip'],
-                        form.d.privilege))
+        cur.execute('''INSERT INTO Reservations (room, checkIn, checkOut, rate, adults, kids)
+                        VALUES (%s, STR_TO_DATE(%s, '%%d/%%m/%%y'), STR_TO_DATE(%s, '%%d/%%m/%%y'), %s, %s, %s)''',
+                        (form.d.roomName,
+                        form.d.checkIn, 
+                        form.d.checkOut, 
+                        form.d.rate,
+                        form.d.adults,
+                        form.d.kids))
+
 
         # Commit your changes in the database
         db.commit()
