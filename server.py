@@ -248,6 +248,7 @@ class Reservation:
             class_ = "btn btn-default btn-block")
 
     )
+
     guest_formNew = form.Form(
         form.Textbox("first_name",
             form.notnull,
@@ -261,16 +262,17 @@ class Reservation:
             placeholder='Enter your last name'),
         form.Textbox("email",
             form.notnull,
-            description = "Emal",
+            description = "Email",
             class_ = "form-control",
             placeholder='Enter your email')
     )
+
     guest_formExisting = form.Form(
-        form.Textbox("last_name",
+        form.Textbox("email",
             form.notnull,
-            description = "Last Name",
+            description = "Email",
             class_ = "form-control",
-            placeholder='Enter your last name')
+            placeholder='Enter your email')
     )
 
     def GET(self):

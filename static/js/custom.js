@@ -8,3 +8,18 @@ $(window).resize(function(){
 	    $('th').width('30%');
 	}
 });
+
+$(document).ready(function() {
+	$('#new-guest').click(function() {
+	   	if($('#new-guest').is(':checked')) {
+	   		$('#existingForm').toggle('500');
+	   		$('#newForm').toggle('500');
+	   	}
+	});
+	$('#existing-guest').click(function() {
+	   	if($('#existing-guest').is(':checked')) {
+	   		$('#newForm').toggle('500');
+	   		$('#existingForm').toggle('500');
+	   	}
+	});
+});

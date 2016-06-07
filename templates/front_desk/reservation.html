@@ -14,14 +14,17 @@ $var user: $user
             $if error != "":
                 <p><font color="red"> $error </font></p>
 
-            <label class="radio-inline"><input type="radio" name="optradio">New Guest</label>
-            <label class="radio-inline"><input type="radio" name="optradio">Existing Guest</label>
-            <div id = "newForm">
+            <div style="padding: 20px 0;">
+                <label class="radio-inline"><input id="new-guest" type="radio" name="optradio">New Guest</label>
+                <label class="radio-inline"><input id="existing-guest" type="radio" name="optradio" checked="true">Existing Guest</label>
+            </div>
+            <div id = "newForm" style="display: none; padding: 20px 0;">
                 $:formNew.render()
             </div>
-            <div id = "formExisting">
+            <div id = "existingForm" style="padding: 20px 0;">
                 $:formExisting.render()
             </div>
+
             $:form.render()
 
         </form>
