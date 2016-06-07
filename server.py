@@ -187,7 +187,7 @@ class Register:
 
     def __helper(self, form):
         salt = hashlib.sha1(urandom(16)).hexdigest()
-
+        print "here"
         #SQL query to INSERT a record into the table FACTRESTTBL.
         cur.execute('''INSERT INTO Users (first_name, last_name, encrypted_password, email, created_at, updated_at, current_sign_in_at, last_sign_in_at, current_sign_in_ip, last_sign_in_ip, privilege)
                         VALUES (%s, %s, %s, %s, NOW(), NOW(), NOW(), NOW(), %s, %s, %s)''',
@@ -201,6 +201,15 @@ class Register:
 
         # Commit your changes in the database
         db.commit()
+        try:
+            web.config.smtp_server = 'smtp.gmail.com'
+            web.config.smtp_port = 587
+            web.config.smtp_username = 'junkmail2592@gmail.com'
+            web.config.smtp_password = 'hmsFinalProject'
+            web.config.smtp_starttls = True
+            web.sendmail('junkmail2592@gmail.com', form.d.email, 'Welcome to HMS!', 'Hello, '+form.d.first_name+'! Congratulations you are now apart of the HMS family!')
+        except:
+            print "Error: unable to send email"
 
 class Reservation:
     register_form = form.Form(
