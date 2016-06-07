@@ -32,7 +32,7 @@ INSERT INTO Reservations VALUES
    (69316,'RND',STR_TO_DATE('26-FEB-10', '%d-%b-%y'),STR_TO_DATE('07-MAR-10', '%d-%b-%y'),150.00,1,0),
    (69844,'RND',STR_TO_DATE('07-MAR-10', '%d-%b-%y'),STR_TO_DATE('11-MAR-10', '%d-%b-%y'),172.50,1,0),
    (96839,'RND',STR_TO_DATE('11-MAR-10', '%d-%b-%y'),STR_TO_DATE('12-MAR-10', '%d-%b-%y'),150.00,1,0),
-   (43911,'RND',STR_TO_DATE('12-MAR-10', '%d-%b-%y'),STR_TO_DATE('13-MAR-10', '%d-%b-%y'),127.50,1,0)1,
+   (43911,'RND',STR_TO_DATE('12-MAR-10', '%d-%b-%y'),STR_TO_DATE('13-MAR-10', '%d-%b-%y'),127.50,1,0),
    (48382,'RND',STR_TO_DATE('13-MAR-10', '%d-%b-%y'),STR_TO_DATE('14-MAR-10', '%d-%b-%y'),150.00,1,0),
    (77032,'RND',STR_TO_DATE('14-MAR-10', '%d-%b-%y'),STR_TO_DATE('17-MAR-10', '%d-%b-%y'),172.50,1,0),
    (30043,'RND',STR_TO_DATE('17-MAR-10', '%d-%b-%y'),STR_TO_DATE('18-MAR-10', '%d-%b-%y'),150.00,2,0);
@@ -56,7 +56,7 @@ INSERT INTO Guests VALUES
    (15, 'HERBERT', 'FRANC', 64, 77032),
    (16, 'RHEA', 'HELFRITZ', 38, 30043);
 
-INSERT INTO Comments VALURD
+INSERT INTO Comments VALUES
    (1, 'CLINTON', 'something@test.test', 'insert your comment here');
 
 

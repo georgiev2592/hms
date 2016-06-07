@@ -9,8 +9,8 @@ CREATE TABLE Users (
     sign_in_count INT DEFAULT 0,
     current_sign_in_at DATETIME NOT NULL,
     last_sign_in_at DATETIME NOT NULL,
-    current_sign_in_ip VARCHAR(15) NOT NULL,
-    last_sign_in_ip VARCHAR(15) NOT NULL,
+    current_sign_in_ip VARCHAR(20) NOT NULL,
+    last_sign_in_ip VARCHAR(20) NOT NULL,
     privilege INT NOT NULL,
     CONSTRAINT U_PK PRIMARY KEY(id)
 );
@@ -26,7 +26,7 @@ CREATE TABLE Rooms (
 );
 
 CREATE TABLE Reservations (
-    code INT,
+    code INT AUTO_INCREMENT,
     room CHAR(5),
     checkIn DATE,
     checkOut DATE,
@@ -43,7 +43,7 @@ CREATE TABLE Guests (
     first_name VARCHAR(80) NOT NULL,
     last_name VARCHAR(80) NOT NULL,
     email VARCHAR(100) NOT NULL,
-    birthday DATE NOT NULL,
+    -- birthday DATE NOT NULL,
     reservation_code INT,
     CONSTRAINT G_PK PRIMARY KEY(id),
     CONSTRAINT G_RES_CODE FOREIGN KEY(reservation_code) REFERENCES Reservations(code)
@@ -53,6 +53,6 @@ CREATE TABLE Comments (
     id INT NOT NULL AUTO_INCREMENT,
     name VARCHAR(160) NOT NULL,
     email VARCHAR(100) NOT NULL,
-    content VARCHAR(500) NOT NULL,
+    content VARCHAR(800) NOT NULL,
     CONSTRAINT C_PK PRIMARY KEY(id)
 );
