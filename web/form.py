@@ -133,6 +133,10 @@ class Input(object):
         if 'class_' in attrs:
             attrs['class'] = attrs['class_']
             del attrs['class_']
+
+        if 'maxlength_' in attrs:
+            attrs['maxlength'] = attrs['maxlength_']
+            del attrs['maxlength_']
         
     def is_hidden(self):
         return False
