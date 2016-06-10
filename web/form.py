@@ -201,6 +201,39 @@ class Textbox(Input):
     def get_type(self):
         return 'text'
 
+class Date(Input):
+    """Date input.
+    
+        >>> Date(name='foo', value='bar').render()
+        u'<input type="date" id="foo" value="bar" name="foo"/>'
+        >>> Date(name='foo', value=0).render()
+        u'<input type="date" id="foo" value="0" name="foo"/>'
+    """        
+    def get_type(self):
+        return 'date'
+
+class Email(Input):
+    """Email input.
+    
+        >>> Email(name='foo', value='bar').render()
+        u'<input type="email" id="foo" value="bar" name="foo"/>'
+        >>> Email(name='foo', value=0).render()
+        u'<input type="email" id="foo" value="0" name="foo"/>'
+    """        
+    def get_type(self):
+        return 'email'
+
+class Number(Input):
+    """Number input.
+    
+        >>> Number(name='foo', value='bar').render()
+        u'<input type="number" id="foo" value="bar" name="foo"/>'
+        >>> Number(name='foo', value=0).render()
+        u'<input type="number" id="foo" value="0" name="foo"/>'
+    """        
+    def get_type(self):
+        return 'number'
+
 class Password(Input):
     """Password input.
 

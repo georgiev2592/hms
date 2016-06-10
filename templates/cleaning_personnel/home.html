@@ -6,6 +6,7 @@ $var user: $user
     <div class="col-lg-6 col-lg-offset-3 col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
         <div class="starter-template">
             <h1>Welcome, $user!</h1>
+            <span class="tittle-line"></span>
             <p class="lead">You are logged in as an cleaning person!</p>
         </div>
     </div><!-- /.col -->
@@ -15,34 +16,18 @@ $var user: $user
       <table class="table table-striped">
             <caption>List of Reservations</caption>
             <tr>
-                <th>code</th>
-                <th>room</th>
                 <th>checkIn</th>
                 <th>checkOut</th>
-                <th>rate</th>
-                <th>adults</th>
-                <th>kids</th>
                 <th>roomName</th>
                 <th>beds</th>
                 <th>bedType</th>
-                <th>maxOcc</th>
-                <th>basePrice</th>
-                <th>decor</th>
                 $for reservation in list_of_reservations
                     <tr>
-                        <td>$reservation['code']</td>
-                        <td>$reservation['room']</td>
                         <td>$reservation['checkIn']</td>
                         <td>$reservation['checkOut']</td>
-                        <td>$reservation['rate']</td>
-                        <td>$reservation['adults']</td>
-                        <td>$reservation['kids']</td>
                         <td>$reservation['roomName']</td>
                         <td>$reservation['beds']</td>
                         <td>$reservation['bedType']</td>
-                        <td>$reservation['maxOcc']</td>
-                        <td>$reservation['basePrice']</td>
-                        <td>$reservation['decor']</td>
                     </tr>
             </tr>
       </table>

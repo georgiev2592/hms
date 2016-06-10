@@ -1,0 +1,44 @@
+$def with (title, user, users_details)
+$var title: $title
+$var user: $user
+
+<div class="row">
+    <div class="col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
+        <div class="starter-template">
+            <h1>$users_details['first_name'] $users_details['last_name']'s Profile</h1>
+            <span class="tittle-line"></span>
+            <p class="lead"></p>
+        </div>
+    </div><!-- /.col -->
+</div><!-- /.row -->
+<div class="row">
+    <div class="col-md-4 col-md-offset-4 col-sm-8 col-sm-offset-2">
+        <table class="table table-striped">
+      		<caption>List of Users</caption>
+    		<tr>
+              	<th>name</th>
+              	<th>email</th>
+              	<th>created_at</th>
+              	<th>updated_at</th>
+              	<th>current_sign_in</th>
+              	<th>last_sign_in</th>
+              	<th>current_ip</th>
+              	<th>last_ip</th>
+              	<th>privilege</th>
+                
+                    <tr>
+                      	<td><a href="/users/$user['id']">$users_details['first_name'] $users_details['last_name']<a></td>
+                      	<td>$users_details['email']</td>
+                      	<td>$users_details['created_at']</td>
+                      	<td>$users_details['updated_at']</td>
+                      	<td>$users_details['current_sign_in_at']</td>
+                      	<td>$users_details['last_sign_in_at']</td>
+                      	<td>$users_details['current_sign_in_ip']</td>
+                      	<td>$users_details['last_sign_in_ip']</td>
+                  		<td>$users_details['privilege']</td>
+                      	<td>
+                    </tr>
+          	</tr>
+        </table>
+    </div><!-- /.col -->
+</div><!-- /.row -->

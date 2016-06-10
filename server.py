@@ -15,6 +15,7 @@ urls = (
     '/home', 'Home',
     '/about', 'About',
     '/contact', 'Contact',
+    '/users/([0-9]+)', 'User',
     '/users/edit/([0-9]+)', 'UpdateUser',
     '/users/delete/([0-9]+)', 'DeleteUser',
     '/reservation', 'Reservation'
@@ -36,7 +37,7 @@ else:
 
 class Login:
     login_form = form.Form(
-        form.Textbox('email',
+        form.Email('email',
             form.notnull,
             description='Email',
             id='emailBox',
@@ -80,31 +81,29 @@ class Login:
         salt = ident['encrypted_password'][:40]
         pw = hashlib.sha1(salt + form.d.password).hexdigest()
 
-        #try:
-        if pw == ident['encrypted_password'][40:]:
-            session.login = 1
-            session.privilege = ident['privilege']
-            session.name = ident['first_name'] + ' ' + ident['last_name']
+        try:
+            if pw == ident['encrypted_password'][40:]:
+                session.login = 1
+                session.privilege = ident['privilege']
+                session.name = ident['first_name'] + ' ' + ident['last_name']
 
-            update_user_current_login(ident)
+                update_user_current_login(ident)
 
-            render = create_render(session.privilege)
+                render = create_render(session.privilege)
 
-            list_of_users, list_of_comments, list_of_reservations = setup_home(session.privilege)
+                list_of_users, list_of_comments, list_of_reservations = setup_home(session.privilege)
 
-            return render.home('HMS | Home', ident['first_name'] + ' ' + ident['last_name'], '', '', '', list_of_users, list_of_comments, list_of_reservations)
-        else:
-            session.login = 0
-            session.privilege = -1
-            render = create_render(session.privilege)
-            return render.index('HMS | Login', form, '', '', 'Username/Password Incorrect')
-        '''
+                return render.home('HMS | Home', ident['first_name'] + ' ' + ident['last_name'], '', '', '', list_of_users, list_of_comments, list_of_reservations)
+            else:
+                session.login = 0
+                session.privilege = -1
+                render = create_render(session.privilege)
+                return render.index('HMS | Login', form, '', '', 'Username/Password Incorrect')
         except:
             session.login = 0
             session.privilege = -1
             render = create_render(session.privilege)
             return render.index('HMS | Login', form, '', '', 'Username/Password Incorrect')
-        '''
 
 class Register:
     register_form = form.Form(
@@ -118,7 +117,7 @@ class Register:
             description = "Last Name",
             class_ = "form-control",
             placeholder='Enter employee last name'),
-        form.Textbox("email",
+        form.Email("email",
             form.notnull,
             description = "Email",
             class_ = "form-control",
@@ -165,7 +164,7 @@ class Register:
             err = 'Invalid fields.'
         else:
 
-            cur.execute('SELECT * FROM Users WHERE email=%s', (form.d.email))
+            cur.execute('SELECT * FROM Users WHERE email=%s', [form.d.email])
             ident = fetchOneAssoc(cur)
 
             try:
@@ -218,27 +217,27 @@ class Reservation:
             description = "Room type",
             class_ = "form-control",
             placeholder='Select room type'),
-        form.Textbox("checkIn",
+        form.Date("checkIn",
             form.notnull,
             description = "Check In",
             class_ = "form-control",
             placeholder='mm/dd/yyyy'),
-        form.Textbox("checkOut",
+        form.Date("checkOut",
             form.notnull,
             description = "Check Out",
             class_ = "form-control",
             placeholder='mm/dd/yyyy'),
-        form.Textbox("rate",
+        form.Number("rate",
             form.notnull,
             description = "Rate",
             class_ = "form-control",
             placeholder='Enter the nightly rate'),
-        form.Textbox("adults",
+        form.Number("adults",
             form.notnull,
             description = "Adults",
             class_ = "form-control",
             placeholder='Enter how many adults'),
-        form.Textbox("kids",
+        form.Number("kids",
             form.notnull,
             description = "Kids",
             class_ = "form-control",
@@ -260,7 +259,7 @@ class Reservation:
             description = "Last Name",
             class_ = "form-control",
             placeholder='Enter your last name'),
-        form.Textbox("email",
+        form.Email("email",
             form.notnull,
             description = "Email",
             class_ = "form-control",
@@ -268,7 +267,7 @@ class Reservation:
     )
 
     guest_formExisting = form.Form(
-        form.Textbox("email",
+        form.Email("email",
             form.notnull,
             description = "Email",
             class_ = "form-control",
@@ -309,14 +308,7 @@ class Reservation:
         return render.home('HMS | Home', session.name, '', msg, err, list_of_users, list_of_comments, list_of_reservations)
 
     def __helper(self, form, guest_formNew, guest_formExisting):
-        print 'room name is: ', form.d.roomName, 'checkin date is: ', form.d.checkIn
-
         #SQL query to INSERT a record into the table FACTRESTTBL.
-        
-        print form.d.checkIn, form.d.checkOut
-        print guest_formNew.d.first_name, guest_formNew.d.last_name, guest_formNew.d.email
-        print guest_formExisting.d.email
-
         cur.execute('''INSERT INTO Reservations (room, checkIn, checkOut, rate, adults, kids)
                         VALUES (%s, STR_TO_DATE(%s, '%%m/%%d/%%Y'), STR_TO_DATE(%s, '%%m/%%d/%%Y'), %s, %s, %s)''',
                         (form.d.roomName,
@@ -347,6 +339,14 @@ class Reservation:
         # Commit your changes in the database
         db.commit()
 
+class User:
+    def GET(self, id):
+        cur.execute('SELECT * FROM Users WHERE id=%s', [id])
+        ident = fetchOneAssoc(cur)
+
+        render = create_render(session.privilege)
+        return render.user('HMS | ' + ident['first_name'] + ' ' + ident['last_name'], session.name, ident)
+
 class UpdateUser:
     update_form = form.Form(
         form.Textbox("first_name",
@@ -359,7 +359,7 @@ class UpdateUser:
             description = "Last Name",
             class_ = "form-control",
             placeholder='Enter employee last name'),
-        form.Textbox("email",
+        form.Email("email",
             form.notnull,
             description = "Email",
             class_ = "form-control",
@@ -384,10 +384,11 @@ class UpdateUser:
         )
 
     nullform = form.Form()
+
     def GET(self, id):
         form = self.update_form()
 
-        cur.execute('SELECT * FROM Users WHERE id=%s', id)
+        cur.execute('SELECT * FROM Users WHERE id=%s', [id])
         ident = fetchOneAssoc(cur)
 
         form['first_name'].value = ident['first_name']
@@ -403,7 +404,7 @@ class UpdateUser:
 
         err = ''
 
-        cur.execute('SELECT * FROM Users WHERE id=%s', id)
+        cur.execute('SELECT * FROM Users WHERE id=%s', [id])
         ident = fetchOneAssoc(cur)
 
         form['first_name'].value = ident['first_name']
@@ -416,8 +417,6 @@ class UpdateUser:
         form['privilege'].value = ident['privilege']
 
         if not form.validates():
-            session.login = 0
-            session.privilege = -1
             err = 'Invalid fields.'
         else:
             self.__helper(form, id)
@@ -430,15 +429,15 @@ class UpdateUser:
     def __helper(self, form, id):
         salt = hashlib.sha1(urandom(16)).hexdigest()
 
-        cur.execute('UPDATE Users SET first_name = %s WHERE id = %s', (form.d.first_name, id))
-        cur.execute('UPDATE Users SET last_name = %s WHERE id = %s', (form.d.last_name, id))
-        cur.execute('UPDATE Users SET email = %s WHERE id = %s', (form.d.email, id))
-        cur.execute('UPDATE Users SET privilege = %s WHERE id = %s', (form.d.privilege, id))
+        cur.execute('UPDATE Users SET first_name = %s, last_name = %s, email = %s, privilege = %s WHERE id = %s', (form.d.first_name, form.d.last_name, form.d.email, form.d.privilege, id))
+        # cur.execute('UPDATE Users SET last_name = %s WHERE id = %s', (form.d.last_name, id))
+        # cur.execute('UPDATE Users SET email = %s WHERE id = %s', (form.d.email, id))
+        # cur.execute('UPDATE Users SET privilege = %s WHERE id = %s', (form.d.privilege, id))
 
         if form.d.password != '':
-            cur.execute('UPDATE Users SET encrypted_password = %s WHERE id = %s', (form.d.password, id))
+            cur.execute('UPDATE Users SET encrypted_password = %s WHERE id = %s', (salt + hashlib.sha1(salt + form.d.password).hexdigest(), id))
 
-        cur.execute('UPDATE Users SET updated_at = NOW() WHERE id = %s', id)
+        cur.execute('UPDATE Users SET updated_at = NOW() WHERE id = %s', [id])
 
         # Commit your changes in the database
         db.commit()
@@ -456,7 +455,7 @@ class DeleteUser:
     def __helper(self, form, id):
         print id
 
-        cur.execute('DELETE from Users WHERE id = %s', id)
+        cur.execute('DELETE from Users WHERE id = %s', [id])
 
         # Commit your changes in the database
         db.commit()
@@ -490,7 +489,7 @@ class Contact:
             description="Name",
             class_ = 'form-control',
             placeholder='Enter your first and last name'),
-        form.Textbox('email',
+        form.Email('email',
             form.notnull,
             description='Email',
             id='emailBox',
@@ -633,13 +632,13 @@ def generate_comments_list():
     return list_of_comments
 
 def update_user_current_login(ident):
-    cur.execute('UPDATE Users SET last_sign_in_at = current_sign_in_at WHERE email = %s', ident['email'])
-    cur.execute('UPDATE Users SET current_sign_in_at = NOW() WHERE email = %s', ident['email'])
+    cur.execute('UPDATE Users SET last_sign_in_at = current_sign_in_at WHERE email = %s', [ident['email']])
+    cur.execute('UPDATE Users SET current_sign_in_at = NOW() WHERE email = %s', [ident['email']])
 
-    cur.execute('UPDATE Users SET last_sign_in_ip = current_sign_in_ip WHERE email = %s', ident['email'])
+    cur.execute('UPDATE Users SET last_sign_in_ip = current_sign_in_ip WHERE email = %s', [ident['email']])
     cur.execute('UPDATE Users SET current_sign_in_ip = %s WHERE email = %s', (web.ctx['ip'], ident['email']))
 
-    cur.execute('UPDATE Users SET sign_in_count = sign_in_count + 1 WHERE email = %s', ident['email'])
+    cur.execute('UPDATE Users SET sign_in_count = sign_in_count + 1 WHERE email = %s', [ident['email']])
 
     # Commit your changes in the database
     db.commit()

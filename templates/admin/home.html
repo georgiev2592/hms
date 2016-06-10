@@ -6,6 +6,7 @@ $var user: $user
     <div class="col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
         <div class="starter-template">
             <h1>Welcome, $user!</h1>
+            <span class="tittle-line"></span>
             <p class="lead">You are logged in as an administrator!</p>
         </div>
     </div><!-- /.col -->
@@ -32,11 +33,12 @@ $var user: $user
               	<th>current_ip</th>
               	<th>last_ip</th>
               	<th>privilege</th>
-              	<th>Edit</th>
-              	<th>Delete</th>
+                <th>View User</th>
+              	<th>Edit User</th>
+              	<th>Delete User</th>
                 $for user in list_of_users
                     <tr>
-                      	<td>$user['first_name'] $user['last_name'] </td>
+                      	<td>$user['first_name'] $user['last_name']</td>
                       	<td>$user['email']</td>
                       	<td>$user['created_at']</td>
                       	<td>$user['updated_at']</td>
@@ -45,6 +47,7 @@ $var user: $user
                       	<td>$user['current_sign_in_ip']</td>
                       	<td>$user['last_sign_in_ip']</td>
                   		<td>$user['privilege']</td>
+                        <td><a href="/users/$user['id']" class="btn btn-success btn-block">View</a></td>
                       	<td><a href="/users/edit/$user['id']" class="btn btn-warning btn-block">Edit</a></td>
                       	<td><a href="/users/delete/$user['id']" class="btn btn-danger btn-block">Delete</a></td>
                     </tr>
