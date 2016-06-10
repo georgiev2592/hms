@@ -1,0 +1,8 @@
+Before starting install (http://webpy.org/install) web.py onto your computer, you can install it using the command:
+python setup.py install
+After installation you can run the server with:
+python server.py
+
+In order to take advantage of our application and its database
+mysql hms -h hms.cytvwijmz1je.us-west-2.rds.amazonaws.com -P 3306 -u wreckingball -phmsFinalProject 
+and run our database files into the database.
