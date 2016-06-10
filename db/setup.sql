@@ -7,10 +7,10 @@ CREATE TABLE Users (
     created_at DATETIME NOT NULL,
     updated_at DATETIME NOT NULL,
     sign_in_count INT DEFAULT 0,
-    current_sign_in_at DATETIME NOT NULL,
-    last_sign_in_at DATETIME NOT NULL,
-    current_sign_in_ip VARCHAR(20) NOT NULL,
-    last_sign_in_ip VARCHAR(20) NOT NULL,
+    current_sign_in_at DATETIME DEFAULT NULL,
+    last_sign_in_at DATETIME DEFAULT NULL,
+    current_sign_in_ip VARCHAR(20) DEFAULT NULL,
+    last_sign_in_ip VARCHAR(20) DEFAULT NULL,
     privilege INT NOT NULL,
     CONSTRAINT U_PK PRIMARY KEY(id)
 );
@@ -55,4 +55,14 @@ CREATE TABLE Comments (
     email VARCHAR(100) NOT NULL,
     content VARCHAR(800) NOT NULL,
     CONSTRAINT C_PK PRIMARY KEY(id)
+);
+
+CREATE TABLE Facilities (
+    id INT NOT NULL PRIMARY KEY,
+    pool INT NOT NULL,
+    smoking_area INT NOT NULL,
+    fitness_center INT NOT NULL,
+    meeting_room INT NOT NULL,
+    gift_shop INT NOT NULL,
+    spa INT NOT NULL
 );

@@ -490,8 +490,19 @@ class About:
     def GET(self):
         session.login = 0
         session.privilege = -1
+
+        cur.execute('SELECT * FROM Facilities')
+        count = 0
+
+        for row in cur.fetchall():
+            count += 1
+
+        cur.execute('SELECT * FROM Facilities')
+        list_of_facilities = [fetchOneAssoc(cur) for k in range(count)]
+
         render = create_render(session.privilege)
-        return render.about('HMS | About', '')  
+        return render.about('HMS | About', '', list_of_facilities) 
+ 
 
 class Contact:
     contact_form = form.Form(

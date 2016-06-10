@@ -59,6 +59,6 @@ INSERT INTO Guests (first_name, last_name, email, reservation_code) VALUES
 INSERT INTO Comments VALUES
    (1, 'CLINTON', 'something@test.test', 'insert your comment here');
 
-
-
+INSERT INTO Facilities VALUES
+   (1, 0, 3, 2, 4, 1, 1);
 

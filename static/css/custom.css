@@ -29,3 +29,11 @@ table{
 td{
     word-wrap:break-word
 }
+
+p {
+    text-align: left;
+}
+
+ul {
+    text-align: left;
+}
